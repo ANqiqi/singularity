@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hongruan.online.admin.dao.AdminDaoImpl;
 import com.hongruan.online.entity.Admin;
+import com.hongruan.online.entity.Task;
+
 
 
 
@@ -29,5 +31,8 @@ public class AdminServiceImpl {
 		}
 		return false;
 	}
-	
+	public void publishTask(Task task) {
+		this.adminDaoImpl.publishTask(task);
+		
+	}
 }

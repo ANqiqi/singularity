@@ -1,9 +1,17 @@
 package com.hongruan.online.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -18,6 +26,14 @@ public class User {
 	private String alipayName;
 	private String personalIntroduction;
 	private boolean isRegist;
+	private Set<UserTask> userTaskSet = new HashSet<UserTask>();
+	@OneToMany(mappedBy = "user", targetEntity = UserTask.class)
+	public Set<UserTask> getUserTaskSet() {
+		return userTaskSet;
+	}
+	public void setUserTaskSet(Set<UserTask> userTaskSet) {
+		this.userTaskSet = userTaskSet;
+	}
 	public boolean isRegist() {
 		return isRegist;
 	}

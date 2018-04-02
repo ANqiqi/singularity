@@ -1,15 +1,19 @@
 package com.hongruan.online.user.controller;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.hongruan.online.entity.Task;
 import com.hongruan.online.entity.User;
+import com.hongruan.online.entity.UserTask;
 import com.hongruan.online.user.service.UserServiceImpl;
 
 @Controller
@@ -48,5 +52,38 @@ public class UserController {
 	public String userSureRegist(Integer userId) {
 		this.userServiceImpl.userSureRegist(userId);
 		return "redirect:/User/showNewUsers.do";
+	}
+	@RequestMapping("/checkLogin")
+	public String checkLogin(@RequestParam String userName, @RequestParam String password, HttpSession session) {
+		boolean isExist = this.userServiceImpl.CheckLogin(userName, password);
+		if(isExist == true) {
+			session.setAttribute("userName", userName);
+			return "user-index";
+		}else {
+			return "user-login";
+		}
+	}
+	@RequestMapping("/applyBit")
+	public String applyBit(HttpSession session) {
+		Task task = (Task)session.getAttribute("task");
+		String userName = (String)session.getAttribute("userName");
+		User user = this.userServiceImpl.getUserByUserName(userName);
+		Iterator it = user.getUserTaskSet().iterator();
+		while(it.hasNext()) {
+			UserTask t = (UserTask)it.next();
+			if(t.getTask().getTaskId() == task.getTaskId()) {
+				return "already-bit";
+			}
+		}
+			UserTask ut = new UserTask();
+			ut.setTaskCondition("竞标中");
+			ut.setTask(task);
+			ut.setUser(user);
+			task.getUserTaskSet().add(ut);
+			user.getUserTaskSet().add(ut);
+			this.userServiceImpl.userTaskmapped(ut,user,task);
+			return "success-bit";
+		
+
 	}
 }
